@@ -121,13 +121,6 @@ NUMBER_OF_SECONDS_CUT = 2
 
 output = np.copy(black_video)
 
-# source_full_list = ["source_full_0.mov", "source_full_1.mov", "source_full_2.mov", "source_full_3.mov", "source_full_4.mov"]
-#
-# source_full = []
-#
-# for s in source_full_list:
-#     source_full.append(np.array(imageio.mimread("Full_Videos/" + s, memtest=False), dtype=np.uint8))
-
 print("sources read successfully")
 
 
@@ -153,27 +146,27 @@ for i in range(TOTAL_LENGTH):
 print("Shape of stitched video:", output.shape)
 imageio.mimwrite('stitched.mov', output.astype(np.uint8), fps=FRAMES_PER_SECOND, macro_block_size=None)
 
-# # Fades
-# FADE_TIME = 2  # seconds
-#
-# end = TOTAL_LENGTH - 1
-# while np.count_nonzero(output[end]) == 0:
-#     end -= 1
-#
-# start = 0
-# while np.count_nonzero(output[start]) == 0:
-#     start += 1
-#
-# fadeFrames = FADE_TIME * FRAMES_PER_SECOND
-# fade_func = np.linspace(0, 1, fadeFrames)
-#
-# for i in range(end, (end - fadeFrames), -1):
-#     output[i] = output[i] * fade_func[end - i]
-#
-# for i in range(start, (start + fadeFrames)):
-#     output[i] = output[i] * fade_func[i - start]
-#
-# imageio.mimwrite('stitched_fade.mov', output., fps=FRAMES_PER_SECOND)
+# Fades
+FADE_TIME = 2  # seconds
+
+end = TOTAL_LENGTH - 1
+while np.count_nonzero(output[end]) == 0:
+    end -= 1
+
+start = 0
+while np.count_nonzero(output[start]) == 0:
+    start += 1
+
+fadeFrames = FADE_TIME * FRAMES_PER_SECOND
+fade_func = np.linspace(0, 1, fadeFrames)
+
+for i in range(end, (end - fadeFrames), -1):
+    output[i] = output[i] * fade_func[end - i]
+
+for i in range(start, (start + fadeFrames)):
+    output[i] = output[i] * fade_func[i - start]
+
+imageio.mimwrite('stitched_fade.mov', output, fps=FRAMES_PER_SECOND)
 
 cmd = 'ffmpeg -y -i HQ_Audio.wav  -r 30 -i stitched.mov  -filter:a aresample=async=1 -c:a aac -c:v copy stitched_av.mov'
 subprocess.call(cmd, shell=True)
